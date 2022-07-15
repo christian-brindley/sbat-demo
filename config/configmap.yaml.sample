@@ -1,0 +1,37 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: securebanking-platform-config
+data:
+  IG_FQDN: tpp.sbat.demo
+  IDENTITY_PLATFORM_FQDN: openam-forgerock-securebankingaccelerato.forgeblocks.com
+  # CDK value: (Cloud Developer's Kit) development identity platform
+  # CDM value: CDM (Cloud Deployment Model)
+  # FIDC value: FIDC (Forgerock Identity Cloud) identity cloud platform
+  ENVIRONMENT_TYPE: FIDC
+  RS_FQDN: rs.sbat.demo
+  RCS_FQDN: rcs.sbat.demo
+  RCS_UI_FQDN: rcs-ui.sbat.demo
+  AM_REALM: alpha
+  USER_OBJECT: user
+  IG_CLIENT_ID: ig-client
+  IG_CLIENT_SECRET: Passw0rd
+  IG_IDM_USER: service_account.ig
+  IG_IDM_PASSWORD: Passw0rd
+  IG_AGENT_ID: ig-agent
+  IG_AGENT_PASSWORD: Passw0rd
+  IG_RCS_SECRET: Passw0rd
+  IG_SSA_SECRET: Passw0rd
+  CERT_ISSUER: null-issuer
+  ASPSP_KEYSTORE_PATH: /secrets/aspsp.test.p12
+  ASPSP_KEYSTORE_PASSWORD: Passw0rd
+  ASPSP_JWTSIGNER_ALIAS: jwtsigner
+  ASPSP_JWTSIGNER_KID: NTOZs+cHZSyO0p0AKPuHctl2ddc=
+  CA_KEYSTORE_PATH: /secrets/ca.p12
+  CA_KEYSTORE_TYPE: PKCS12
+  CA_KEYSTORE_STOREPASS: Passw0rd
+  CA_KEYSTORE_KEYPASS: Passw0rd
+  CA_KEYSTORE_ALIAS: ca
+  TRUST_KEYSTORE_PATH: /secrets/demo-ca.p12
+  TRUST_KEYSTORE_TYPE: PKCS12
+  TRUST_KEYSTORE_STOREPASS: Passw0rd

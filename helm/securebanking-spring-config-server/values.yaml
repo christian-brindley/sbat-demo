@@ -1,0 +1,38 @@
+deployment:
+  apiVersion: apps/v1
+  replicas: 1
+
+  rollingUpdate:
+    maxSurge: 50%
+    maxUnavailable: 25%
+
+  imagePullPolicy: Never
+
+
+  # Deploy a different image to the intended release (useful for test and development)
+  imageOverride:
+    enabled: true
+    repo: securebanking-spring-config-server
+    tag: latest
+
+  java:
+    opts: -XX:+UseG1GC -XX:+UseContainerSupport -XX:MaxRAMPercentage=50 -agentlib:jdwp=transport=dt_socket,address=*:9090,server=y,suspend=n
+
+  resources: 
+    limits:
+      cpu: "100m"
+      memory: "256Mi"
+    requests:
+      cpu: "100m"
+      memory: "256Mi"
+
+  server:
+    port: 8888
+
+git:
+  ssh: 
+    enabled: false
+    storedSecretProject: example-project
+  org: christian-brindley
+  repo: sbat-config
+  branch: master

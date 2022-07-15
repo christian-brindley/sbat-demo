@@ -1,0 +1,12 @@
+apiVersion: {{ .Values.apiVersion.service }}
+kind: Service
+metadata:
+  name: {{ .Chart.Name }}-{{ .Values.swaggerUI.subdomain }}
+spec:
+  type: ClusterIP
+  ports:
+  - port: 8080
+    targetPort: {{ .Values.swaggerUI.deployment.port }}
+    protocol: TCP
+  selector:
+    app: {{ .Chart.Name }}-{{ .Values.swaggerUI.subdomain }}
