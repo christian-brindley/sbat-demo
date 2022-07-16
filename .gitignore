@@ -1,1 +1,3 @@
-config/configmap.yaml
+overlay/namespace/configmap.yaml
+overlay/ig/secrets.yaml
+certs

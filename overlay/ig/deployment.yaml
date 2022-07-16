@@ -1,0 +1,200 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ig
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ig
+  template:
+    metadata:
+      annotations:
+        sidecar.istio.io/inject: "false"
+      labels:
+        app: ig
+    spec:
+      containers:
+      - name: ig
+        env:
+        - name: IDENTITY_PLATFORM_FQDN
+          valueFrom:
+            configMapKeyRef:
+              name: securebanking-platform-config
+              key: IDENTITY_PLATFORM_FQDN
+        - name: IG_FQDN
+          valueFrom:
+            configMapKeyRef:
+              name: securebanking-platform-config
+              key: IG_FQDN
+        - name: ENVIRONMENT_TYPE
+          valueFrom:
+            configMapKeyRef:
+              name: securebanking-platform-config
+              key: ENVIRONMENT_TYPE
+        - name: RS_FQDN
+          valueFrom:
+            configMapKeyRef:
+              name: securebanking-platform-config
+              key: RS_FQDN
+        - name:  RCS_FQDN
+          valueFrom:
+            configMapKeyRef:
+              name: securebanking-platform-config
+              key: RCS_FQDN
+        - name:  RCS_UI_FQDN
+          valueFrom:
+            configMapKeyRef:
+              name: securebanking-platform-config
+              key: RCS_UI_FQDN
+        - name:  AM_REALM
+          valueFrom:
+            configMapKeyRef:
+              name: securebanking-platform-config
+              key: AM_REALM
+        - name:  USER_OBJECT
+          valueFrom:
+            configMapKeyRef:
+              name: securebanking-platform-config
+              key: USER_OBJECT
+        - name:  IG_CLIENT_ID
+          valueFrom:
+            configMapKeyRef:
+              name: securebanking-platform-config
+              key: IG_CLIENT_ID
+        - name:  IG_CLIENT_SECRET
+          valueFrom:
+            configMapKeyRef:
+              name: securebanking-platform-config
+              key: IG_CLIENT_SECRET
+        - name:  IG_IDM_USER
+          valueFrom:
+            configMapKeyRef:
+              name: securebanking-platform-config
+              key: IG_IDM_USER
+        - name:  IG_IDM_PASSWORD
+          valueFrom:
+            configMapKeyRef:
+              name: securebanking-platform-config
+              key: IG_IDM_PASSWORD
+        - name:  IG_AGENT_ID
+          valueFrom:
+            configMapKeyRef:
+              name: securebanking-platform-config
+              key: IG_AGENT_ID
+        - name:  IG_AGENT_PASSWORD
+          valueFrom:
+            configMapKeyRef:
+              name: securebanking-platform-config
+              key: IG_AGENT_PASSWORD
+        - name:  IG_RCS_SECRET
+          valueFrom:
+            configMapKeyRef:
+              name: securebanking-platform-config
+              key: IG_RCS_SECRET
+        - name:  IG_SSA_SECRET
+          valueFrom:
+            configMapKeyRef:
+              name: securebanking-platform-config
+              key: IG_SSA_SECRET
+        - name:  CERT_ISSUER
+          valueFrom:
+            configMapKeyRef:
+              name: securebanking-platform-config
+              key: CERT_ISSUER
+        - name:  ASPSP_KEYSTORE_PATH
+          valueFrom:
+            configMapKeyRef:
+              name: securebanking-platform-config
+              key: ASPSP_KEYSTORE_PATH
+        - name:  ASPSP_KEYSTORE_PASSWORD
+          valueFrom:
+            configMapKeyRef:
+              name: securebanking-platform-config
+              key: ASPSP_KEYSTORE_PASSWORD
+        - name:  ASPSP_JWTSIGNER_ALIAS
+          valueFrom:
+            configMapKeyRef:
+              name: securebanking-platform-config
+              key: ASPSP_JWTSIGNER_ALIAS
+        - name:  ASPSP_JWTSIGNER_KID
+          valueFrom:
+            configMapKeyRef:
+              name: securebanking-platform-config
+              key: ASPSP_JWTSIGNER_KID
+        - name:  CA_KEYSTORE_PATH
+          valueFrom:
+            configMapKeyRef:
+              name: securebanking-platform-config
+              key: CA_KEYSTORE_PATH
+        - name:  CA_KEYSTORE_TYPE
+          valueFrom:
+            configMapKeyRef:
+              name: securebanking-platform-config
+              key: CA_KEYSTORE_TYPE
+        - name:  CA_KEYSTORE_STOREPASS
+          valueFrom:
+            configMapKeyRef:
+              name: securebanking-platform-config
+              key: CA_KEYSTORE_STOREPASS
+        - name:  CA_KEYSTORE_KEYPASS
+          valueFrom:
+            configMapKeyRef:
+              name: securebanking-platform-config
+              key: CA_KEYSTORE_KEYPASS
+        - name:  CA_KEYSTORE_ALIAS
+          valueFrom:
+            configMapKeyRef:
+              name: securebanking-platform-config
+              key: CA_KEYSTORE_ALIAS
+        - name:  CA_KEK
+          valueFrom:
+            configMapKeyRef:
+              name: securebanking-platform-config
+              key: CA_KEK
+        - name:  TRUST_KEYSTORE_PATH
+          valueFrom:
+            configMapKeyRef:
+              name: securebanking-platform-config
+              key: TRUST_KEYSTORE_PATH
+        - name:  TRUST_KEYSTORE_TYPE
+          valueFrom:
+            configMapKeyRef:
+              name: securebanking-platform-config
+              key: TRUST_KEYSTORE_TYPE
+        - name:  TRUST_KEYSTORE_STOREPASS
+          valueFrom:
+            configMapKeyRef:
+              name: securebanking-platform-config
+              key: TRUST_KEYSTORE_STOREPASS
+        - name: NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: MY_POD_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+        envFrom:
+        - secretRef:
+            name: openig-secrets-env
+        #image: gcr.io/forgerock-io/ig/docker-build:7.0.0-af5592b
+        image: ig
+        imagePullPolicy: IfNotPresent
+        livenessProbe:
+          httpGet:
+            path: /kube/liveness
+            port: 8080
+          periodSeconds: 30
+          timeoutSeconds: 5
+        readinessProbe:
+          httpGet:
+            path: /kube/readiness
+            port: 8080
+          initialDelaySeconds: 5
+        ports:
+        - containerPort: 8080   
+        resources:
+          requests:
+            cpu: 200m
+            memory: 512Mi
