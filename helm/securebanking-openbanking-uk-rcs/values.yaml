@@ -18,7 +18,7 @@ deployment:
     port: 8080
 
   cors:
-    originEnds: localhost
+    originEnds: consent.sbat.demo
 
   java:
     opts: -XX:+UseG1GC -XX:+UseContainerSupport -XX:MaxRAMPercentage=50 -agentlib:jdwp=transport=dt_socket,address=*:9091,server=y,suspend=n
