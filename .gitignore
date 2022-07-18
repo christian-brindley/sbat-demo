@@ -1,3 +1,4 @@
 overlay/namespace/configmap.yaml
 overlay/ig/secrets.yaml
-certs
+certs/sbat-demo*
+certs/key*
