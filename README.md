@@ -190,7 +190,7 @@ securebanking-spring-config-server-5d7bd8778-pvmxd   1/1     Running   0        
 Clone and build the remote consent service from the SBAT repo
 ```
 $ git clone https://github.com/SecureBankingAccessToolkit/securebanking-openbanking-uk-rcs
-$ cd ssecurebanking-openbanking-uk-rcs
+$ cd securebanking-openbanking-uk-rcs
 ```
 Before you build the service, adjust `securebanking-openbanking-uk-rcs-sample/pom.xml` to adjust the repository and disable push in the `dockerfile-maven-plugin` section
 ```
