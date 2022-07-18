@@ -281,10 +281,23 @@ If you run `docker images` you should see the UI images `securebanking-rcs-ui` a
 You can use the helm charts in this repo to deploy the UIs.
 ```
 $ cd helm
-$     - helm install securebanking-ui securebanking-ui
+$ helm install securebanking-ui securebanking-ui
 ```
 If you run a `kubectl get pods` you should see the UI pods running - e.g.
 ```
 securebanking-ui-consent-65dbb4c96f-rxgpk            1/1     Running   0          32s
 securebanking-ui-swagger-7f67f7cf6d-55f66            1/1     Running   0          58s
 ```
+
+## Testing
+### Create a test user and associated account data
+Create a test user in the ForgeRock platform to act as an Open Banking PSU. 
+Next, create test data in the mock resource server for that user.
+The demonstration Postman collection inludes sample REST calls for creating the user via the user management API, and for creating account data via the resource server administration API.
+
+### Run the TPP account information and payment flows
+Run the main TPP flows to make sure that all the SBAT services are deployed correctly, and that the ForgeRock platform is configured correctly.
+The demonstration Postman collection includes tests for the following flows
+- TPP onboarding via dynamic client registration
+- Account Information consent and API authorisation
+- Domestic Paymment consent and API authorisation
