@@ -41,9 +41,9 @@ This would require the following entry in /etc/hosts
 192.168.133.133 tpp.sbat.demo consent.sbat.demo swagger.sbat.demo rcs.sbat.demo
 ```
 
-## Wildcard certificate
+## Self signed TLS certificate
 
-You'll need to generate a self signed wildcard certificate for the `sbat.demo` domain. A sample openssl config file is provided in this repo:
+You'll need to generate a self signed TLS certificate for the `sbat.demo` domain. A sample openssl config file is provided in this repo:
 
 ```
 $ cd certs
