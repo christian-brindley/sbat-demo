@@ -1,13 +1,13 @@
 deployment:
   urls:
     ig:
-      server: localhost
+      server: tpp.sbat.demo
     authorization:
-      server: localhost
+      server: am.sbat.demo
     rcs:
-      server: localhost
+      server: rcs.sbat.demo
     rs:
-      server: localhost
+      server: rs.sbat.demo
 
 rcsUI:
   subdomain: consent
@@ -39,7 +39,7 @@ swaggerUI:
     templateName: forgerock
     urls:
       swagger:
-        json: localhost
+        json: swagger.sbat.demo
 
     rollingUpdate:
       maxSurge: 50%

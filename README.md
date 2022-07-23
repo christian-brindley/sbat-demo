@@ -43,11 +43,10 @@ This would require the following entry in /etc/hosts
 
 ## Self signed TLS certificate
 
-You'll need to generate a self signed TLS certificate for the `sbat.demo` domain. A sample openssl config file is provided in this repo:
+You'll need to generate a self signed TLS certificate for the `sbat.demo` domain. A sample openssl config file is provided in this repo - e.g. under the `certs` directory:
 
 ```
-$ cd certs
-$ openssl req -x509 -newkey rsa:4096 -keyout sbat-demo.key -out sbat-demo.crt -sha256 -days 365 -subj '/CN=sbat.demo' -nodes  -config openssl.cnf 
+openssl req -x509 -newkey rsa:4096 -keyout sbat-demo.key -out sbat-demo.crt -sha256 -days 365 -subj '/CN=sbat.demo' -nodes  -config openssl.cnf 
 ```
 
 This needs to be trusted by your workstation browser to avoid TLS issues during testing.
@@ -63,15 +62,14 @@ $ kubens sbat
 ```
 
 ### TLS secrets
-Load the server certificate you created previously as a TLS secret in your namespace
+Load the server certificate you created previously as a TLS secret in your namespace - e.g. under the `certs` directory
 
 ```
-$ cd certs
-$ kubectl create secret tls server.tls --key=sbat-demo.key --cert=sbat-demo.crt
+kubectl create secret tls server.tls --key=sbat-demo.key --cert=sbat-demo.crt
 ```
 Load the test trusted CA certs
 ```
-$  kubectl create secret generic obri-ca --from-file=ca.crt=ca.crt
+kubectl create secret generic obri-ca --from-file=ca.crt=ca.crt
 ```
 
 ### Config map
@@ -154,8 +152,8 @@ There are a few changes you'll need to make to both of these files to work with 
 ### Build the spring config server
 Clone and build the spring config server from the SBAT repo
 ```
-$ git clone https://github.com/SecureBankingAccessToolkit/securebanking-spring-config-server
-$ cd securebanking-spring-config-server
+git clone https://github.com/SecureBankingAccessToolkit/securebanking-spring-config-server
+cd securebanking-spring-config-server
 ```
 Before you build the server, adjust the pom.xml to adjust the repository and disable push in the `dockerfile-maven-plugin` section
 ```
@@ -170,15 +168,14 @@ Before you build the server, adjust the pom.xml to adjust the repository and dis
 ```
 Now build it
 ```
-$ mvn package -DskipTests=true -Dtag=latest -file pom.xml
+mvn package -DskipTests=true -Dtag=latest -file pom.xml
 ```
 If you run `docker images` you should see the image `securebanking-spring-config-server` that you just built.
 
 ### Deploy the server
-You can use the helm charts in this repo to deploy the config server.
+You can use the helm charts in this repo to deploy the config server. Under the `helm` directory:
 ```
-$ cd helm
-$ helm install securebanking-spring-config-server securebanking-spring-config-server
+helm install securebanking-spring-config-server securebanking-spring-config-server
 ```
 If you run a `kubectl get pods` you should see the config server running - e.g.
 ```
@@ -189,8 +186,8 @@ securebanking-spring-config-server-5d7bd8778-pvmxd   1/1     Running   0        
 ### Build the remote consent service
 Clone and build the remote consent service from the SBAT repo
 ```
-$ git clone https://github.com/SecureBankingAccessToolkit/securebanking-openbanking-uk-rcs
-$ cd securebanking-openbanking-uk-rcs
+git clone https://github.com/SecureBankingAccessToolkit/securebanking-openbanking-uk-rcs
+cd securebanking-openbanking-uk-rcs
 ```
 Before you build the service, adjust `securebanking-openbanking-uk-rcs-sample/pom.xml` to adjust the repository and disable push in the `dockerfile-maven-plugin` section
 ```
@@ -206,15 +203,14 @@ Before you build the service, adjust `securebanking-openbanking-uk-rcs-sample/po
 ```
 Now build it
 ```
-$ mvn package -DskipTests=true -Dtag=latest -file securebanking-openbanking-uk-rcs-sample/pom.xml
+mvn package -DskipTests=true -Dtag=latest -file securebanking-openbanking-uk-rcs-sample/pom.xml
 ```
 If you run `docker images` you should see the image `securebanking-openbanking-uk-rcs` that you just built.
 
 ### Deploy the server
-You can use the helm charts in this repo to deploy the remote consent service.
+You can use the helm charts in this repo to deploy the remote consent service. Under the `helm` directory:
 ```
-$ cd helm
-$ helm install securebanking-openbanking-uk-rcs securebanking-openbanking-uk-rcs
+helm install securebanking-openbanking-uk-rcs securebanking-openbanking-uk-rcs
 ```
 If you run a `kubectl get pods` you should see the config server running - e.g.
 ```
@@ -225,8 +221,8 @@ securebanking-openbanking-uk-rcs-754f6758c8-phx97    1/1     Running   0        
 ### Deploy MongoDB
 Deploy MongoDB into the sbat namespace. For simplicity, you can deploy with authentication switched off.
 ```
-$ helm repo add bitnami https://charts.bitnami.com/bitnami 
-$ helm install mongodb bitnami/mongodb --set auth.enabled=false
+helm repo add bitnami https://charts.bitnami.com/bitnami 
+helm install mongodb bitnami/mongodb --set auth.enabled=false
 ```
 If you now run a `kubectl get pods` you should see mongo running
 ```
@@ -235,8 +231,8 @@ mongodb-7df9799c65-rdlxs                             1/1     Running   0        
 ### Build the resource server
 Clone and build the mock resource server from the SBAT repo
 ```
-$ git clone https://github.com/SecureBankingAccessToolkit/securebanking-openbanking-uk-rs
-$ cd securebanking-openbanking-uk-rs
+git clone https://github.com/SecureBankingAccessToolkit/securebanking-openbanking-uk-rs
+cd securebanking-openbanking-uk-rs
 ```
 Before you build the service, adjust `securebanking-openbanking-uk-rs-simulator-sample/pom.xml` to adjust the repository and disable push in the `dockerfile-maven-plugin` section
 ```
@@ -252,14 +248,13 @@ Before you build the service, adjust `securebanking-openbanking-uk-rs-simulator-
 ```
 Now build it
 ```
-$ mvn package -DskipTests=true -Dtag=latest -file securebanking-openbanking-uk-rs-simulator-sample/pom.xml
+mvn package -DskipTests=true -Dtag=latest -file securebanking-openbanking-uk-rs-simulator-sample/pom.xml
 ```
 If you run `docker images` you should see the image `securebanking-openbanking-uk-rs` that you just built.
 ### Deploy the resource server
-You can use the helm charts in this repo to deploy the resource server.
+You can use the helm charts in this repo to deploy the resource server. Under the `helm` directory:
 ```
-$ cd helm
-$ helm install securebanking-openbanking-uk-rs securebanking-openbanking-uk-rs
+helm install securebanking-openbanking-uk-rs securebanking-openbanking-uk-rs
 ```
 If you run a `kubectl get pods` you should see the config server running - e.g.
 ```
@@ -267,21 +262,26 @@ securebanking-openbanking-uk-rs-5699575c9d-tb4sx     1/1     Running   0        
 ```
 ## UI
 ### Build the UI apps
-Clone and build the UI apps from the SBAT repo
+Clone the SBAT UI repo
 ```
-$ git clone https://github.com/SecureBankingAccessToolkit/securebanking-ui
-$ cd securebanking-ui
-$ cd ecurebanking-rcs-ui
-$ docker build -t securebanking-rcs-ui:latest -f projects/rcs/docker/Dockerfile .
-$ cd ../securebanking-swagger-ui
-$ docker build -t securebanking-swagger-ui:latest -f projects/swagger/docker/Dockerfile .
+git clone https://github.com/SecureBankingAccessToolkit/securebanking-ui
+cd securebanking-ui
+```
+Build the RCS UI
+```
+cd securebanking-rcs-ui
+docker build -t securebanking-rcs-ui:latest -f projects/rcs/docker/Dockerfile .
+```
+Build the Swagger UI
+```
+cd ../securebanking-swagger-ui
+docker build -t securebanking-swagger-ui:latest -f projects/swagger/docker/Dockerfile .
 ```
 If you run `docker images` you should see the UI images `securebanking-rcs-ui` and `securebanking-swagger-ui` that you just built.
 ### Deploy the UIs
-You can use the helm charts in this repo to deploy the UIs.
+You can use the helm charts in this repo to deploy the UIs. Under the helm directory:
 ```
-$ cd helm
-$ helm install securebanking-ui securebanking-ui
+helm install securebanking-ui securebanking-ui
 ```
 If you run a `kubectl get pods` you should see the UI pods running - e.g.
 ```
