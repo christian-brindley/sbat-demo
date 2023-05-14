@@ -1,0 +1,1169 @@
+{
+	"info": {
+		"_postman_id": "0919a1e7-bc80-4760-9265-f1e6e1ee4a9b",
+		"name": "Logging/Monitoring",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "5812244"
+	},
+	"item": [
+		{
+			"name": "Get Audit Log Sources",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const JSONResponse = JSON.parse(responseBody);",
+							"",
+							"// Did request contain results?",
+							"if(JSONResponse.resultCount && JSONResponse.resultCount > 0)",
+							"{",
+							"  // Set `managedUserId` variable",
+							"  pm.globals.set(\"auditSource\", JSONResponse.result[0]);",
+							"}",
+							"else",
+							"{",
+							"  pm.globals.set(\"auditSource\", \"none_found\");  ",
+							"}",
+							"",
+							"",
+							"// Tests",
+							"",
+							"pm.test(\"Status code is 200.\", () => {",
+							"  pm.expect(pm.response.code).to.eql(200);",
+							"});",
+							"",
+							"pm.test(\"Response contains tokenId or authId\", function () {",
+							"    pm.expect(JSONResponse).to.have.any.keys('resultCount', 'result');",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "x-api-key",
+						"value": "{{logApiKey}}"
+					},
+					{
+						"key": "x-api-secret",
+						"type": "text",
+						"value": "{{logApiSecret}}"
+					}
+				],
+				"url": {
+					"raw": "https://{{iamFQDN}}/monitoring/logs/sources?_prettyPrint=true",
+					"protocol": "https",
+					"host": [
+						"{{iamFQDN}}"
+					],
+					"path": [
+						"monitoring",
+						"logs",
+						"sources"
+					],
+					"query": [
+						{
+							"key": "_prettyPrint",
+							"value": "true"
+						}
+					]
+				},
+				"description": "Get log sources"
+			},
+			"response": [
+				{
+					"name": "List of log sources",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/logs/sources?_pageSize=<integer>&_pagedResouresOffset=<integer>&_prettyPrint=false",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"logs",
+								"sources"
+							],
+							"query": [
+								{
+									"key": "_pageSize",
+									"value": "<integer>"
+								},
+								{
+									"key": "_pagedResouresOffset",
+									"value": "<integer>"
+								},
+								{
+									"key": "_prettyPrint",
+									"value": "false"
+								}
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n\t\"result\": [\n\t\t\"<string>\",\n\t\t\"<string>\"\n\t],\n\t\"resultCount\": \"<integer>\",\n\t\"pagedResultsCookie\": \"<string>\",\n\t\"totalPagedResultsPolicy\": \"<string>\",\n\t\"totalPagedResults\": \"<integer>\",\n\t\"remainingPagedResults\": \"<integer>\"\n}"
+				}
+			]
+		},
+		{
+			"name": "Tail audit log",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const jsonData = JSON.parse(responseBody);",
+							"if(jsonData.pagedResultsCookie && jsonData.pagedResultsCookie != \"\"){",
+							"    pm.globals.set(\"pagedResultsCookie\", jsonData.pagedResultsCookie);",
+							"}",
+							"",
+							"// Tests",
+							"",
+							"pm.test(\"Status code is 200.\", () => {",
+							"  pm.expect(pm.response.code).to.eql(200);",
+							"});",
+							"",
+							"pm.test(\"Response contains results\", function () {",
+							"    pm.expect(jsonData).to.have.any.keys('resultCount', 'result');",
+							"});",
+							"",
+							"pm.test(\"Response contains pagedResultsCookie\", function () {",
+							"    pm.expect(jsonData).to.have.any.keys('pagedResultsCookie');",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "x-api-key",
+						"type": "text",
+						"value": "{{logApiKey}}"
+					},
+					{
+						"key": "x-api-secret",
+						"type": "text",
+						"value": "{{logApiSecret}}"
+					}
+				],
+				"url": {
+					"raw": "https://{{iamFQDN}}/monitoring/logs/tail?source=idm-sync&__pagedResultsCookie={{pagedResultsCookie}}&_prettyPrint=false",
+					"protocol": "https",
+					"host": [
+						"{{iamFQDN}}"
+					],
+					"path": [
+						"monitoring",
+						"logs",
+						"tail"
+					],
+					"query": [
+						{
+							"key": "source",
+							"value": "idm-sync"
+						},
+						{
+							"key": "__pagedResultsCookie",
+							"value": "{{pagedResultsCookie}}"
+						},
+						{
+							"key": "_prettyPrint",
+							"value": "false"
+						}
+					]
+				},
+				"description": "Tail log events"
+			},
+			"response": [
+				{
+					"name": "List of log events",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/logs/tail?source=<string>&_pagedResultsCookie=<string>&_prettyPrint=false",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"logs",
+								"tail"
+							],
+							"query": [
+								{
+									"key": "source",
+									"value": "<string>"
+								},
+								{
+									"key": "_pagedResultsCookie",
+									"value": "<string>"
+								},
+								{
+									"key": "_prettyPrint",
+									"value": "false"
+								}
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n\t\"result\": [\n\t\t{\n\t\t\t\"payload\": \"<object>\",\n\t\t\t\"timestamp\": \"<dateTime>\",\n\t\t\t\"type\": \"<string>\"\n\t\t},\n\t\t{\n\t\t\t\"payload\": \"<object>\",\n\t\t\t\"timestamp\": \"<dateTime>\",\n\t\t\t\"type\": \"<string>\"\n\t\t}\n\t],\n\t\"resultCount\": \"<integer>\",\n\t\"pagedResultsCookie\": \"<string>\",\n\t\"totalPagedResultsPolicy\": \"<string>\",\n\t\"totalPagedResults\": \"<integer>\",\n\t\"remainingPagedResults\": \"<integer>\"\n}"
+				}
+			]
+		},
+		{
+			"name": "Get DS log",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const jsonData = JSON.parse(responseBody);",
+							"if(jsonData.pagedResultsCookie && jsonData.pagedResultsCookie != \"\"){",
+							"    pm.globals.set(\"pagedResultsCookie\", jsonData.pagedResultsCookie);",
+							"}",
+							"",
+							"// Tests",
+							"",
+							"pm.test(\"Status code is 200.\", () => {",
+							"  pm.expect(pm.response.code).to.eql(200);",
+							"});",
+							"",
+							"pm.test(\"Response contains results\", function () {",
+							"    pm.expect(jsonData).to.have.any.keys('resultCount', 'result');",
+							"});",
+							"",
+							"pm.test(\"Response contains pagedResultsCookie\", function () {",
+							"    pm.expect(jsonData).to.have.any.keys('pagedResultsCookie');",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "x-api-key",
+						"type": "text",
+						"value": "{{logApiKey}}"
+					},
+					{
+						"key": "x-api-secret",
+						"type": "text",
+						"value": "{{logApiSecret}}"
+					}
+				],
+				"url": {
+					"raw": "https://{{iamFQDN}}/monitoring/logs?source=userstore-access&beginTime=2021-12-01T07:43:00Z",
+					"protocol": "https",
+					"host": [
+						"{{iamFQDN}}"
+					],
+					"path": [
+						"monitoring",
+						"logs"
+					],
+					"query": [
+						{
+							"key": "source",
+							"value": "userstore-access"
+						},
+						{
+							"key": "beginTime",
+							"value": "2021-12-01T07:43:00Z"
+						}
+					]
+				},
+				"description": "Tail log events"
+			},
+			"response": [
+				{
+					"name": "List of log events",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/logs/tail?source=<string>&_pagedResultsCookie=<string>&_prettyPrint=false",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"logs",
+								"tail"
+							],
+							"query": [
+								{
+									"key": "source",
+									"value": "<string>"
+								},
+								{
+									"key": "_pagedResultsCookie",
+									"value": "<string>"
+								},
+								{
+									"key": "_prettyPrint",
+									"value": "false"
+								}
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n\t\"result\": [\n\t\t{\n\t\t\t\"payload\": \"<object>\",\n\t\t\t\"timestamp\": \"<dateTime>\",\n\t\t\t\"type\": \"<string>\"\n\t\t},\n\t\t{\n\t\t\t\"payload\": \"<object>\",\n\t\t\t\"timestamp\": \"<dateTime>\",\n\t\t\t\"type\": \"<string>\"\n\t\t}\n\t],\n\t\"resultCount\": \"<integer>\",\n\t\"pagedResultsCookie\": \"<string>\",\n\t\"totalPagedResultsPolicy\": \"<string>\",\n\t\"totalPagedResults\": \"<integer>\",\n\t\"remainingPagedResults\": \"<integer>\"\n}"
+				}
+			]
+		},
+		{
+			"name": "Get IDM log",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const jsonData = JSON.parse(responseBody);",
+							"if(jsonData.pagedResultsCookie && jsonData.pagedResultsCookie != \"\"){",
+							"    pm.globals.set(\"pagedResultsCookie\", jsonData.pagedResultsCookie);",
+							"}",
+							"",
+							"// Tests",
+							"",
+							"pm.test(\"Status code is 200.\", () => {",
+							"  pm.expect(pm.response.code).to.eql(200);",
+							"});",
+							"",
+							"pm.test(\"Response contains results\", function () {",
+							"    pm.expect(jsonData).to.have.any.keys('resultCount', 'result');",
+							"});",
+							"",
+							"pm.test(\"Response contains pagedResultsCookie\", function () {",
+							"    pm.expect(jsonData).to.have.any.keys('pagedResultsCookie');",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "x-api-key",
+						"type": "text",
+						"value": "{{logApiKey}}"
+					},
+					{
+						"key": "x-api-secret",
+						"type": "text",
+						"value": "{{logApiSecret}}"
+					}
+				],
+				"url": {
+					"raw": "https://{{iamFQDN}}/monitoring/logs?beginTime=2022-07-01T18:49:20.952579189Z&source=idm-everything",
+					"protocol": "https",
+					"host": [
+						"{{iamFQDN}}"
+					],
+					"path": [
+						"monitoring",
+						"logs"
+					],
+					"query": [
+						{
+							"key": "transactionId",
+							"value": "1654856902276-81b80b226337f503a34b-332840",
+							"disabled": true
+						},
+						{
+							"key": "endTime",
+							"value": "2021-12-16T09:35:05.105Z",
+							"disabled": true
+						},
+						{
+							"key": "beginTime",
+							"value": "2022-07-01T18:49:20.952579189Z"
+						},
+						{
+							"key": "source",
+							"value": "idm-everything"
+						}
+					]
+				},
+				"description": "Tail log events"
+			},
+			"response": [
+				{
+					"name": "List of log events",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/logs/tail?source=<string>&_pagedResultsCookie=<string>&_prettyPrint=false",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"logs",
+								"tail"
+							],
+							"query": [
+								{
+									"key": "source",
+									"value": "<string>"
+								},
+								{
+									"key": "_pagedResultsCookie",
+									"value": "<string>"
+								},
+								{
+									"key": "_prettyPrint",
+									"value": "false"
+								}
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n\t\"result\": [\n\t\t{\n\t\t\t\"payload\": \"<object>\",\n\t\t\t\"timestamp\": \"<dateTime>\",\n\t\t\t\"type\": \"<string>\"\n\t\t},\n\t\t{\n\t\t\t\"payload\": \"<object>\",\n\t\t\t\"timestamp\": \"<dateTime>\",\n\t\t\t\"type\": \"<string>\"\n\t\t}\n\t],\n\t\"resultCount\": \"<integer>\",\n\t\"pagedResultsCookie\": \"<string>\",\n\t\"totalPagedResultsPolicy\": \"<string>\",\n\t\"totalPagedResults\": \"<integer>\",\n\t\"remainingPagedResults\": \"<integer>\"\n}"
+				}
+			]
+		},
+		{
+			"name": "Get IDM audit",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const jsonData = JSON.parse(responseBody);",
+							"if(jsonData.pagedResultsCookie && jsonData.pagedResultsCookie != \"\"){",
+							"    pm.globals.set(\"pagedResultsCookie\", jsonData.pagedResultsCookie);",
+							"}",
+							"",
+							"// Tests",
+							"",
+							"pm.test(\"Status code is 200.\", () => {",
+							"  pm.expect(pm.response.code).to.eql(200);",
+							"});",
+							"",
+							"pm.test(\"Response contains results\", function () {",
+							"    pm.expect(jsonData).to.have.any.keys('resultCount', 'result');",
+							"});",
+							"",
+							"pm.test(\"Response contains pagedResultsCookie\", function () {",
+							"    pm.expect(jsonData).to.have.any.keys('pagedResultsCookie');",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "x-api-key",
+						"type": "text",
+						"value": "{{logApiKey}}",
+						"disabled": true
+					},
+					{
+						"key": "x-api-secret",
+						"type": "text",
+						"value": "{{logApiSecret}}",
+						"disabled": true
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{adminAccessToken}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "https://{{iamFQDN}}/openidm/audit/access?_queryFilter=userId+sw+\\\"Scheduled\\\"",
+					"protocol": "https",
+					"host": [
+						"{{iamFQDN}}"
+					],
+					"path": [
+						"openidm",
+						"audit",
+						"access"
+					],
+					"query": [
+						{
+							"key": "endTime",
+							"value": "2021-12-16T09:35:05.105Z",
+							"disabled": true
+						},
+						{
+							"key": "transactionId",
+							"value": "1653648643940-1973cf56ae72cf00e46c-125192",
+							"disabled": true
+						},
+						{
+							"key": "_queryFilter",
+							"value": "userId+sw+\\\"Scheduled\\\""
+						}
+					]
+				},
+				"description": "Tail log events"
+			},
+			"response": [
+				{
+					"name": "List of log events",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/logs/tail?source=<string>&_pagedResultsCookie=<string>&_prettyPrint=false",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"logs",
+								"tail"
+							],
+							"query": [
+								{
+									"key": "source",
+									"value": "<string>"
+								},
+								{
+									"key": "_pagedResultsCookie",
+									"value": "<string>"
+								},
+								{
+									"key": "_prettyPrint",
+									"value": "false"
+								}
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n\t\"result\": [\n\t\t{\n\t\t\t\"payload\": \"<object>\",\n\t\t\t\"timestamp\": \"<dateTime>\",\n\t\t\t\"type\": \"<string>\"\n\t\t},\n\t\t{\n\t\t\t\"payload\": \"<object>\",\n\t\t\t\"timestamp\": \"<dateTime>\",\n\t\t\t\"type\": \"<string>\"\n\t\t}\n\t],\n\t\"resultCount\": \"<integer>\",\n\t\"pagedResultsCookie\": \"<string>\",\n\t\"totalPagedResultsPolicy\": \"<string>\",\n\t\"totalPagedResults\": \"<integer>\",\n\t\"remainingPagedResults\": \"<integer>\"\n}"
+				}
+			]
+		},
+		{
+			"name": "Get AM log",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const jsonData = JSON.parse(responseBody);",
+							"if(jsonData.pagedResultsCookie && jsonData.pagedResultsCookie != \"\"){",
+							"    pm.globals.set(\"pagedResultsCookie\", jsonData.pagedResultsCookie);",
+							"}",
+							"",
+							"// Tests",
+							"",
+							"pm.test(\"Status code is 200.\", () => {",
+							"  pm.expect(pm.response.code).to.eql(200);",
+							"});",
+							"",
+							"pm.test(\"Response contains results\", function () {",
+							"    pm.expect(jsonData).to.have.any.keys('resultCount', 'result');",
+							"});",
+							"",
+							"pm.test(\"Response contains pagedResultsCookie\", function () {",
+							"    pm.expect(jsonData).to.have.any.keys('pagedResultsCookie');",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "x-api-key",
+						"type": "text",
+						"value": "{{logApiKey}}"
+					},
+					{
+						"key": "x-api-secret",
+						"type": "text",
+						"value": "{{logApiSecret}}"
+					}
+				],
+				"url": {
+					"raw": "https://{{IDENTITY_PLATFORM_FQDN}}/monitoring/logs?source=am-core&beginTime=2022-11-16T17:54:55Z",
+					"protocol": "https",
+					"host": [
+						"{{IDENTITY_PLATFORM_FQDN}}"
+					],
+					"path": [
+						"monitoring",
+						"logs"
+					],
+					"query": [
+						{
+							"key": "source",
+							"value": "am-core"
+						},
+						{
+							"key": "endTime",
+							"value": "2022-11-09T09:53:03Z",
+							"disabled": true
+						},
+						{
+							"key": "transactionId",
+							"value": "502bd73c-5051-411e-a98e-440db2937b4c",
+							"disabled": true
+						},
+						{
+							"key": "_pagedResultsCookie",
+							"value": "{{pagedResultsCookie}}",
+							"disabled": true
+						},
+						{
+							"key": "beginTime",
+							"value": "2022-11-16T17:54:55Z"
+						}
+					]
+				},
+				"description": "Tail log events"
+			},
+			"response": [
+				{
+					"name": "List of log events",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/logs/tail?source=<string>&_pagedResultsCookie=<string>&_prettyPrint=false",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"logs",
+								"tail"
+							],
+							"query": [
+								{
+									"key": "source",
+									"value": "<string>"
+								},
+								{
+									"key": "_pagedResultsCookie",
+									"value": "<string>"
+								},
+								{
+									"key": "_prettyPrint",
+									"value": "false"
+								}
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n\t\"result\": [\n\t\t{\n\t\t\t\"payload\": \"<object>\",\n\t\t\t\"timestamp\": \"<dateTime>\",\n\t\t\t\"type\": \"<string>\"\n\t\t},\n\t\t{\n\t\t\t\"payload\": \"<object>\",\n\t\t\t\"timestamp\": \"<dateTime>\",\n\t\t\t\"type\": \"<string>\"\n\t\t}\n\t],\n\t\"resultCount\": \"<integer>\",\n\t\"pagedResultsCookie\": \"<string>\",\n\t\"totalPagedResultsPolicy\": \"<string>\",\n\t\"totalPagedResults\": \"<integer>\",\n\t\"remainingPagedResults\": \"<integer>\"\n}"
+				}
+			]
+		},
+		{
+			"name": "Get AM log Copy",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const jsonData = JSON.parse(responseBody);",
+							"if(jsonData.pagedResultsCookie && jsonData.pagedResultsCookie != \"\"){",
+							"    pm.globals.set(\"pagedResultsCookie\", jsonData.pagedResultsCookie);",
+							"}",
+							"",
+							"// Tests",
+							"",
+							"pm.test(\"Status code is 200.\", () => {",
+							"  pm.expect(pm.response.code).to.eql(200);",
+							"});",
+							"",
+							"pm.test(\"Response contains results\", function () {",
+							"    pm.expect(jsonData).to.have.any.keys('resultCount', 'result');",
+							"});",
+							"",
+							"pm.test(\"Response contains pagedResultsCookie\", function () {",
+							"    pm.expect(jsonData).to.have.any.keys('pagedResultsCookie');",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "x-api-key",
+						"type": "text",
+						"value": "{{logApiKey}}"
+					},
+					{
+						"key": "x-api-secret",
+						"type": "text",
+						"value": "{{logApiSecret}}"
+					}
+				],
+				"url": {
+					"raw": "https://{{iamFQDN}}/monitoring/logs?transactionId=f56a28ce-f363-46e5-9d34-39d5fe8249f5-request-2&source=am-core&beginTime=2022-04-03T08:30:30Z",
+					"protocol": "https",
+					"host": [
+						"{{iamFQDN}}"
+					],
+					"path": [
+						"monitoring",
+						"logs"
+					],
+					"query": [
+						{
+							"key": "transactionId",
+							"value": "f56a28ce-f363-46e5-9d34-39d5fe8249f5-request-2"
+						},
+						{
+							"key": "source",
+							"value": "am-core"
+						},
+						{
+							"key": "beginTime",
+							"value": "2022-04-03T08:30:30Z"
+						}
+					]
+				},
+				"description": "Tail log events"
+			},
+			"response": [
+				{
+					"name": "List of log events",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/logs/tail?source=<string>&_pagedResultsCookie=<string>&_prettyPrint=false",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"logs",
+								"tail"
+							],
+							"query": [
+								{
+									"key": "source",
+									"value": "<string>"
+								},
+								{
+									"key": "_pagedResultsCookie",
+									"value": "<string>"
+								},
+								{
+									"key": "_prettyPrint",
+									"value": "false"
+								}
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n\t\"result\": [\n\t\t{\n\t\t\t\"payload\": \"<object>\",\n\t\t\t\"timestamp\": \"<dateTime>\",\n\t\t\t\"type\": \"<string>\"\n\t\t},\n\t\t{\n\t\t\t\"payload\": \"<object>\",\n\t\t\t\"timestamp\": \"<dateTime>\",\n\t\t\t\"type\": \"<string>\"\n\t\t}\n\t],\n\t\"resultCount\": \"<integer>\",\n\t\"pagedResultsCookie\": \"<string>\",\n\t\"totalPagedResultsPolicy\": \"<string>\",\n\t\"totalPagedResults\": \"<integer>\",\n\t\"remainingPagedResults\": \"<integer>\"\n}"
+				}
+			]
+		},
+		{
+			"name": "Get audit log",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const jsonData = JSON.parse(responseBody);",
+							"if(jsonData.pagedResultsCookie && jsonData.pagedResultsCookie != \"\"){",
+							"    pm.globals.set(\"pagedResultsCookie\", jsonData.pagedResultsCookie);",
+							"}",
+							"",
+							"// Tests",
+							"",
+							"pm.test(\"Status code is 200.\", () => {",
+							"  pm.expect(pm.response.code).to.eql(200);",
+							"});",
+							"",
+							"pm.test(\"Response contains results\", function () {",
+							"    pm.expect(jsonData).to.have.any.keys('resultCount', 'result');",
+							"});",
+							"",
+							"pm.test(\"Response contains pagedResultsCookie\", function () {",
+							"    pm.expect(jsonData).to.have.any.keys('pagedResultsCookie');",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "x-api-key",
+						"type": "text",
+						"value": "{{logApiKey}}"
+					},
+					{
+						"key": "x-api-secret",
+						"type": "text",
+						"value": "{{logApiSecret}}"
+					}
+				],
+				"url": {
+					"raw": "https://{{fqdn}}/monitoring/logs/tail?source=am-core&__pagedResultsCookie={{pagedResultsCookie}}&_prettyPrint=false",
+					"protocol": "https",
+					"host": [
+						"{{fqdn}}"
+					],
+					"path": [
+						"monitoring",
+						"logs",
+						"tail"
+					],
+					"query": [
+						{
+							"key": "source",
+							"value": "am-core"
+						},
+						{
+							"key": "__pagedResultsCookie",
+							"value": "{{pagedResultsCookie}}"
+						},
+						{
+							"key": "_prettyPrint",
+							"value": "false"
+						}
+					]
+				},
+				"description": "Tail log events"
+			},
+			"response": [
+				{
+					"name": "List of log events",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/logs/tail?source=<string>&_pagedResultsCookie=<string>&_prettyPrint=false",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"logs",
+								"tail"
+							],
+							"query": [
+								{
+									"key": "source",
+									"value": "<string>"
+								},
+								{
+									"key": "_pagedResultsCookie",
+									"value": "<string>"
+								},
+								{
+									"key": "_prettyPrint",
+									"value": "false"
+								}
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n\t\"result\": [\n\t\t{\n\t\t\t\"payload\": \"<object>\",\n\t\t\t\"timestamp\": \"<dateTime>\",\n\t\t\t\"type\": \"<string>\"\n\t\t},\n\t\t{\n\t\t\t\"payload\": \"<object>\",\n\t\t\t\"timestamp\": \"<dateTime>\",\n\t\t\t\"type\": \"<string>\"\n\t\t}\n\t],\n\t\"resultCount\": \"<integer>\",\n\t\"pagedResultsCookie\": \"<string>\",\n\t\"totalPagedResultsPolicy\": \"<string>\",\n\t\"totalPagedResults\": \"<integer>\",\n\t\"remainingPagedResults\": \"<integer>\"\n}"
+				}
+			]
+		},
+		{
+			"name": "Prometheus - AM",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "x-api-key",
+						"type": "text",
+						"value": "{{logApiKey}}"
+					},
+					{
+						"key": "x-api-secret",
+						"type": "text",
+						"value": "{{logApiSecret}}"
+					}
+				],
+				"url": {
+					"raw": "https://{{iamFQDN}}/monitoring/prometheus/am",
+					"protocol": "https",
+					"host": [
+						"{{iamFQDN}}"
+					],
+					"path": [
+						"monitoring",
+						"prometheus",
+						"am"
+					]
+				},
+				"description": "Tail log events"
+			},
+			"response": [
+				{
+					"name": "List of log events",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/logs/tail?source=<string>&_pagedResultsCookie=<string>&_prettyPrint=false",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"logs",
+								"tail"
+							],
+							"query": [
+								{
+									"key": "source",
+									"value": "<string>"
+								},
+								{
+									"key": "_pagedResultsCookie",
+									"value": "<string>"
+								},
+								{
+									"key": "_prettyPrint",
+									"value": "false"
+								}
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n\t\"result\": [\n\t\t{\n\t\t\t\"payload\": \"<object>\",\n\t\t\t\"timestamp\": \"<dateTime>\",\n\t\t\t\"type\": \"<string>\"\n\t\t},\n\t\t{\n\t\t\t\"payload\": \"<object>\",\n\t\t\t\"timestamp\": \"<dateTime>\",\n\t\t\t\"type\": \"<string>\"\n\t\t}\n\t],\n\t\"resultCount\": \"<integer>\",\n\t\"pagedResultsCookie\": \"<string>\",\n\t\"totalPagedResultsPolicy\": \"<string>\",\n\t\"totalPagedResults\": \"<integer>\",\n\t\"remainingPagedResults\": \"<integer>\"\n}"
+				}
+			]
+		},
+		{
+			"name": "Prometheus - IDM",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "x-api-key",
+						"type": "text",
+						"value": "{{logApiKey}}"
+					},
+					{
+						"key": "x-api-secret",
+						"type": "text",
+						"value": "{{logApiSecret}}"
+					}
+				],
+				"url": {
+					"raw": "https://{{iamFQDN}}/monitoring/prometheus/am",
+					"protocol": "https",
+					"host": [
+						"{{iamFQDN}}"
+					],
+					"path": [
+						"monitoring",
+						"prometheus",
+						"am"
+					]
+				},
+				"description": "Tail log events"
+			},
+			"response": [
+				{
+					"name": "List of log events",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/logs/tail?source=<string>&_pagedResultsCookie=<string>&_prettyPrint=false",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"logs",
+								"tail"
+							],
+							"query": [
+								{
+									"key": "source",
+									"value": "<string>"
+								},
+								{
+									"key": "_pagedResultsCookie",
+									"value": "<string>"
+								},
+								{
+									"key": "_prettyPrint",
+									"value": "false"
+								}
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n\t\"result\": [\n\t\t{\n\t\t\t\"payload\": \"<object>\",\n\t\t\t\"timestamp\": \"<dateTime>\",\n\t\t\t\"type\": \"<string>\"\n\t\t},\n\t\t{\n\t\t\t\"payload\": \"<object>\",\n\t\t\t\"timestamp\": \"<dateTime>\",\n\t\t\t\"type\": \"<string>\"\n\t\t}\n\t],\n\t\"resultCount\": \"<integer>\",\n\t\"pagedResultsCookie\": \"<string>\",\n\t\"totalPagedResultsPolicy\": \"<string>\",\n\t\"totalPagedResults\": \"<integer>\",\n\t\"remainingPagedResults\": \"<integer>\"\n}"
+				}
+			]
+		}
+	]
+}

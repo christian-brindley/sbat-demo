@@ -1,0 +1,453 @@
+{
+	"info": {
+		"_postman_id": "236981a6-fa58-4839-88cf-87b79f7dcd4c",
+		"name": "ForgeRock SBAT - IAM Config - Admin Authentication",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "5812244"
+	},
+	"item": [
+		{
+			"name": "Get AM admin session - password",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = JSON.parse(responseBody);",
+							"",
+							"if(jsonData.authId && jsonData.authId != \"\")",
+							"{",
+							"    postman.setEnvironmentVariable(\"authId\", jsonData.authId);",
+							"}",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept-API-Version",
+						"value": "protocol=1.0,resource=2.1",
+						"type": "text"
+					},
+					{
+						"key": "X-OpenAM-Username",
+						"value": "{{ADMIN_USERNAME}}",
+						"type": "text"
+					},
+					{
+						"key": "X-OpenAM-Password",
+						"value": "{{ADMIN_PASSWORD}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "https://{{IDENTITY_PLATFORM_FQDN}}/am/json/authenticate",
+					"protocol": "https",
+					"host": [
+						"{{IDENTITY_PLATFORM_FQDN}}"
+					],
+					"path": [
+						"am",
+						"json",
+						"authenticate"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get AM admin session - skip 2FA (cloud only)",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept-API-Version",
+						"value": "protocol=1.0,resource=2.1",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"authId\": \"{{authId}}\",\n  \"callbacks\": [\n    {\n      \"type\": \"TextOutputCallback\",\n      \"output\": [\n        {\n          \"name\": \"message\",\n          \"value\": \"message-761\"\n        },\n        {\n          \"name\": \"messageType\",\n          \"value\": \"0\"\n        }\n      ]\n    },\n    {\n      \"type\": \"ConfirmationCallback\",\n      \"output\": [\n        {\n          \"name\": \"prompt\",\n          \"value\": \"\"\n        },\n        {\n          \"name\": \"messageType\",\n          \"value\": 0\n        },\n        {\n          \"name\": \"options\",\n          \"value\": [\n            \"Set up\"\n          ]\n        },\n        {\n          \"name\": \"optionType\",\n          \"value\": -1\n        },\n        {\n          \"name\": \"defaultOption\",\n          \"value\": 0\n        }\n      ],\n      \"input\": [\n        {\n          \"name\": \"IDToken2\",\n          \"value\": 0\n        }\n      ]\n    },\n    {\n      \"type\": \"HiddenValueCallback\",\n      \"output\": [\n        {\n          \"name\": \"value\",\n          \"value\": \"false\"\n        },\n        {\n          \"name\": \"id\",\n          \"value\": \"skip-input-761\"\n        }\n      ],\n      \"input\": [\n        {\n          \"name\": \"IDToken3\",\n          \"value\": \"Skip\"\n        }\n      ]\n    },\n    {\n      \"type\": \"TextOutputCallback\",\n      \"output\": [\n        {\n          \"name\": \"message\",\n          \"value\": \"var skipContainer = document.createElement(\\\"div\\\");skipContainer.style = \\\"width:100%\\\";skipContainer.innerHTML = \\\"<button id='skip-link-761' class='btn btn-block btn-link' type='submit'>Skip for now</button>\\\";document.getElementById(\\\"skip-input-761\\\").parentNode.append(skipContainer);document.getElementsByClassName(\\\"callback-component\\\").forEach(  function (e) {    var message = e.firstElementChild;    if (message.firstChild && message.firstChild.nodeName == \\\"#text\\\" && message.firstChild.nodeValue.trim() == \\\"message-761\\\") {      message.align = \\\"center\\\";      message.innerHTML = \\\"<h2 class='h2'>Set up 2-step verification</h2><div style='margin-bottom:1em'>Protect your account by adding a second step after entering your password to verify it's you signing in.</div>\\\";    }  })\"\n        },\n        {\n          \"name\": \"messageType\",\n          \"value\": \"4\"\n        }\n      ]\n    },\n    {\n      \"type\": \"TextOutputCallback\",\n      \"output\": [\n        {\n          \"name\": \"message\",\n          \"value\": \"document.getElementById(\\\"skip-link-761\\\").onclick = function() {  document.getElementById(\\\"skip-input-761\\\").value = \\\"Skip\\\";  document.getElementById(\\\"loginButton_0\\\").click();  return false;}\"\n        },\n        {\n          \"name\": \"messageType\",\n          \"value\": \"4\"\n        }\n      ]\n    }\n  ],\n  \"status\": 200,\n  \"ok\": true\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://{{IDENTITY_PLATFORM_FQDN}}/am/json/realms/root/authenticate",
+					"protocol": "https",
+					"host": [
+						"{{IDENTITY_PLATFORM_FQDN}}"
+					],
+					"path": [
+						"am",
+						"json",
+						"realms",
+						"root",
+						"authenticate"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get IDM admin auth code",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"loc = pm.response.headers.get(\"Location\");",
+							"console.log(\"got loc \" + loc);",
+							"authCode = loc.split(\"code=\")[1].split(\"&\")[0];",
+							"console.log(\"got authcode \" + authCode);",
+							"postman.setEnvironmentVariable(\"adminAC\",authCode);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://{{IDENTITY_PLATFORM_FQDN}}/am/oauth2/authorize?redirect_uri=https://{{IDENTITY_PLATFORM_FQDN}}/platform/appAuthHelperRedirect.html&client_id=idmAdminClient&response_type=code&scope=fr:idm:* fr:idc:esv:*&code_challenge=gX2yL78GGlz3QHsQZKPf96twOmUBKxn1-IXPd5_EHdA&code_challenge_method=S256",
+					"protocol": "https",
+					"host": [
+						"{{IDENTITY_PLATFORM_FQDN}}"
+					],
+					"path": [
+						"am",
+						"oauth2",
+						"authorize"
+					],
+					"query": [
+						{
+							"key": "redirect_uri",
+							"value": "https://{{IDENTITY_PLATFORM_FQDN}}/platform/appAuthHelperRedirect.html"
+						},
+						{
+							"key": "client_id",
+							"value": "idmAdminClient"
+						},
+						{
+							"key": "response_type",
+							"value": "code"
+						},
+						{
+							"key": "scope",
+							"value": "fr:idm:* fr:idc:esv:*"
+						},
+						{
+							"key": "code_challenge",
+							"value": "gX2yL78GGlz3QHsQZKPf96twOmUBKxn1-IXPd5_EHdA"
+						},
+						{
+							"key": "code_challenge_method",
+							"value": "S256"
+						}
+					]
+				},
+				"description": "Obtain an access token as the Postman Administrative User. Create this user in the `/alpha` realm, and ensure it has the `openidm-admin` authorization role."
+			},
+			"response": [
+				{
+					"name": "Example",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "grant_type",
+									"value": "password",
+									"description": "The grant type required for the Resource Owner Password Credentials Grant.",
+									"type": "text"
+								},
+								{
+									"key": "username",
+									"value": "{{postmanDemoUsername}}",
+									"description": "Username for a ForgeRock demo user.",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "{{postmanDemoPassword}}",
+									"description": "Password for a ForgeRock demo user.",
+									"type": "text"
+								},
+								{
+									"key": "scope",
+									"value": "write",
+									"description": "Strings that are presented to the user for approval and included in tokens so that the protected resource may make decisions about what to give access to.",
+									"type": "text"
+								},
+								{
+									"key": "client_id",
+									"value": "{{postmanConfidentialClientId}}",
+									"description": "The ID of the Confidential OAuth Client.",
+									"type": "text"
+								},
+								{
+									"key": "client_secret",
+									"value": "{{postmanClientSecret}}",
+									"description": "The secret of the Confidential OAuth Client. See the ForgeRock documentation for stronger methods of client authentication.",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{amUrl}}/oauth2{{realm}}/access_token",
+							"host": [
+								"{{amUrl}}"
+							],
+							"path": [
+								"oauth2{{realm}}",
+								"access_token"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "X-Frame-Options",
+							"value": "SAMEORIGIN"
+						},
+						{
+							"key": "X-Content-Type-Options",
+							"value": "nosniff"
+						},
+						{
+							"key": "Cache-Control",
+							"value": "no-store"
+						},
+						{
+							"key": "Pragma",
+							"value": "no-cache"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json;charset=UTF-8"
+						},
+						{
+							"key": "Content-Length",
+							"value": "1570"
+						},
+						{
+							"key": "Date",
+							"value": "Thu, 13 Aug 2020 12:16:52 GMT"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"access_token\": \"eyJ0eXAiJ9.eyJzdWIiOiJkZPXXcM\",\n    \"refresh_token\": \"eyJ0eXAiOiJKV1QiLC.eyl0VHJXpdhFiWDw\",\n    \"scope\": \"write\",\n    \"token_type\": \"Bearer\",\n    \"expires_in\": 3599\n}"
+				}
+			]
+		},
+		{
+			"name": "Get IDM admin token",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = JSON.parse(responseBody);",
+							"",
+							"if(jsonData.access_token && jsonData.access_token != \"\")",
+							"{",
+							"    postman.setEnvironmentVariable(\"adminAccessToken\", jsonData.access_token);",
+							"}",
+							"",
+							"if(jsonData.refresh_token && jsonData.refresh_token != \"\")",
+							"{",
+							"    postman.setEnvironmentVariable(\"adminRefreshToken\", jsonData.refresh_token);",
+							"}",
+							"",
+							"// Tests",
+							"",
+							"pm.test(\"Status code is 200\", () => {",
+							"  pm.expect(pm.response.code).to.eql(200);",
+							"});",
+							"",
+							"pm.test(\"Response contains access_token\", function () {",
+							"    pm.expect(jsonData.access_token).to.be.a(\"string\");",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "grant_type",
+							"value": "authorization_code",
+							"type": "text"
+						},
+						{
+							"key": "client_id",
+							"value": "idmAdminClient",
+							"type": "text"
+						},
+						{
+							"key": "redirect_uri",
+							"value": "https://{{IDENTITY_PLATFORM_FQDN}}/platform/appAuthHelperRedirect.html",
+							"type": "text"
+						},
+						{
+							"key": "code",
+							"value": "{{adminAC}}",
+							"type": "text"
+						},
+						{
+							"key": "code_verifier",
+							"value": "codeverifier",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "https://{{IDENTITY_PLATFORM_FQDN}}/am/oauth2/access_token",
+					"protocol": "https",
+					"host": [
+						"{{IDENTITY_PLATFORM_FQDN}}"
+					],
+					"path": [
+						"am",
+						"oauth2",
+						"access_token"
+					]
+				},
+				"description": "Obtain an access token as the Postman Administrative User. Create this user in the `/alpha` realm, and ensure it has the `openidm-admin` authorization role."
+			},
+			"response": [
+				{
+					"name": "Example",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "grant_type",
+									"value": "password",
+									"description": "The grant type required for the Resource Owner Password Credentials Grant.",
+									"type": "text"
+								},
+								{
+									"key": "username",
+									"value": "{{postmanDemoUsername}}",
+									"description": "Username for a ForgeRock demo user.",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "{{postmanDemoPassword}}",
+									"description": "Password for a ForgeRock demo user.",
+									"type": "text"
+								},
+								{
+									"key": "scope",
+									"value": "write",
+									"description": "Strings that are presented to the user for approval and included in tokens so that the protected resource may make decisions about what to give access to.",
+									"type": "text"
+								},
+								{
+									"key": "client_id",
+									"value": "{{postmanConfidentialClientId}}",
+									"description": "The ID of the Confidential OAuth Client.",
+									"type": "text"
+								},
+								{
+									"key": "client_secret",
+									"value": "{{postmanClientSecret}}",
+									"description": "The secret of the Confidential OAuth Client. See the ForgeRock documentation for stronger methods of client authentication.",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{amUrl}}/oauth2{{realm}}/access_token",
+							"host": [
+								"{{amUrl}}"
+							],
+							"path": [
+								"oauth2{{realm}}",
+								"access_token"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "X-Frame-Options",
+							"value": "SAMEORIGIN"
+						},
+						{
+							"key": "X-Content-Type-Options",
+							"value": "nosniff"
+						},
+						{
+							"key": "Cache-Control",
+							"value": "no-store"
+						},
+						{
+							"key": "Pragma",
+							"value": "no-cache"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json;charset=UTF-8"
+						},
+						{
+							"key": "Content-Length",
+							"value": "1570"
+						},
+						{
+							"key": "Date",
+							"value": "Thu, 13 Aug 2020 12:16:52 GMT"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"access_token\": \"eyJ0eXAiJ9.eyJzdWIiOiJkZPXXcM\",\n    \"refresh_token\": \"eyJ0eXAiOiJKV1QiLC.eyl0VHJXpdhFiWDw\",\n    \"scope\": \"write\",\n    \"token_type\": \"Bearer\",\n    \"expires_in\": 3599\n}"
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}

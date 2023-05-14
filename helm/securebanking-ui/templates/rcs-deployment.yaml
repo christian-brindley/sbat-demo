@@ -1,0 +1,58 @@
+apiVersion: {{ .Values.apiVersion.deployment }}
+kind: Deployment
+metadata:
+  name: {{ .Chart.Name }}-{{ .Values.rcsUI.subdomain }}
+  labels:
+    app: {{ .Chart.Name }}-{{ .Values.rcsUI.subdomain }}
+spec:
+  replicas: {{ .Values.rcsUI.deployment.replicas }}
+  strategy:
+    rollingUpdate:
+      maxSurge: {{ .Values.rcsUI.deployment.rollingUpdate.maxSurge }}
+      maxUnavailable: {{ .Values.rcsUI.deployment.rollingUpdate.maxUnavailable }}
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app: {{ .Chart.Name }}-{{ .Values.rcsUI.subdomain }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Chart.Name }}-{{ .Values.rcsUI.subdomain }}
+        appVersion: {{ .Chart.AppVersion }}
+        helmVersion: {{ .Chart.Version }}
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}-{{ .Values.rcsUI.subdomain }}
+          {{- if .Values.rcsUI.deployment.imageOverride.enabled }}
+          image: "{{ .Values.rcsUI.deployment.imageOverride.repo }}:{{ .Values.rcsUI.deployment.imageOverride.tag }}"
+          {{- else }}
+          image: "eu.gcr.io/sbat-gcr-release/securebanking/${ .Chart.Name }:{{ .Chart.AppVersion }}"
+          {{- end }}
+          imagePullPolicy: {{ .Values.rcsUI.deployment.imagePullPolicy }}
+          ports:
+            - name: http-server
+              containerPort: {{ .Values.rcsUI.deployment.port }}
+          env:
+            - name: DOMAIN
+              value: {{ .Values.ingress.domain }}
+            - name: PORT
+              value: {{ .Values.rcsUI.deployment.port | quote }}
+            - name: TEMPLATE
+              value: {{ .Values.rcsUI.deployment.templateName }}
+            - name: IDENTITY_PLATFORM_FQDN
+              valueFrom:
+                configMapKeyRef:
+                  name: securebanking-platform-config
+                  key: IDENTITY_PLATFORM_FQDN
+            - name: RCS_FQDN
+              valueFrom:
+                configMapKeyRef:
+                  name: securebanking-platform-config
+                  key: RCS_FQDN
+            - name: IG_FQDN
+              valueFrom:
+                configMapKeyRef:
+                  name: securebanking-platform-config
+                  key: IG_FQDN
+          resources:
+            {{- toYaml .Values.rcsUI.deployment.resources | nindent 12 }}

@@ -1,0 +1,73 @@
+apiVersion: {{ .Values.deployment.apiVersion }}
+kind: Deployment
+metadata:
+  name: {{ .Chart.Name }}
+  labels:
+    app: {{ .Chart.Name }}
+spec:
+  replicas: {{ .Values.deployment.replicas }}
+  strategy:
+    rollingUpdate:
+      maxSurge: {{ .Values.deployment.rollingUpdate.maxSurge }}
+      maxUnavailable: {{ .Values.deployment.rollingUpdate.maxUnavailable }}
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app: {{ .Chart.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Chart.Name }}
+        appVersion: {{ .Chart.AppVersion }}
+        helmVersion: {{ .Chart.Version }}
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}
+          {{- if .Values.deployment.imageOverride.enabled }}
+          image: "{{ .Values.deployment.imageOverride.repo }}:{{ .Values.deployment.imageOverride.tag }}"
+          {{- else }}
+          image: "eu.gcr.io/sbat-gcr-release/securebanking/{{ .Chart.Name }}:{{ .Chart.AppVersion }}"
+          {{- end}}
+          imagePullPolicy: {{ .Values.deployment.imagePullPolicy }}
+          ports:
+            - name: http-server
+              containerPort: {{ .Values.deployment.server.port }}
+#          readinessProbe:
+#            httpGet:
+#              path: /actuator/health
+#              port: {{ .Values.deployment.server.port }}
+#            periodSeconds: 5
+#            failureThreshold: 3
+#            successThreshold: 1
+#            timeoutSeconds: 5
+#          livenessProbe:
+#            httpGet:
+#              path: /actuator/health
+#              port: {{ .Values.deployment.server.port }}
+#            initialDelaySeconds: 20
+#            periodSeconds: 5
+#            failureThreshold: 5
+#            successThreshold: 1
+#            timeoutSeconds: 5
+          env:
+          - name: SPRING_PROFILES_ACTIVE
+            value: minikube
+          - name: SPRING_CLOUD_CONFIG_SERVER_GIT_DEFAULT_LABEL
+            value: {{ .Values.git.branch }}
+          - name: SPRING_CLOUD_CONFIG_SERVER_GIT_URI
+            {{- if .Values.git.ssh.enabled }}
+            value: git@github.com:{{ .Values.git.org }}/{{ .Values.git.repo }}.git
+            {{- else }}
+            value: https://github.com/{{ .Values.git.org }}/{{ .Values.git.repo }}.git
+            {{- end }}
+          {{ if .Values.git.ssh.enabled }}
+          - name: GIT_CONFIG_SSH_KEY
+            valueFrom:
+              secretKeyRef: 
+                name: git-ssh-key
+                key: id_rsa
+          {{- end }}
+          - name: JAVA_OPTS
+            value: {{ .Values.deployment.java.opts }}
+          resources:
+            {{- toYaml .Values.deployment.resources | nindent 12 }}

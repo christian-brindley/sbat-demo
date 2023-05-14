@@ -1,0 +1,211 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ig
+spec:
+  template:
+    spec:
+      containers:
+      - name: ig
+        imagePullPolicy: Never
+        env:
+        - name: IDENTITY_PLATFORM_FQDN
+          valueFrom:
+            configMapKeyRef:
+              name: securebanking-platform-config
+              key: IDENTITY_PLATFORM_FQDN
+        - name: IG_FQDN
+          valueFrom:
+            configMapKeyRef:
+              name: securebanking-platform-config
+              key: IG_FQDN
+        - name: MTLS_FQDN
+          valueFrom:
+            configMapKeyRef:
+              name: securebanking-platform-config
+              key: MTLS_FQDN
+        - name: ENVIRONMENT_TYPE
+          valueFrom:
+            configMapKeyRef:
+              name: securebanking-platform-config
+              key: ENVIRONMENT_TYPE
+        - name: RS_FQDN
+          valueFrom:
+            configMapKeyRef:
+              name: securebanking-platform-config
+              key: RS_FQDN
+        - name: RS_INTERNAL_SVC
+          valueFrom:
+            configMapKeyRef:
+              name: securebanking-platform-config
+              key: RS_INTERNAL_SVC
+        - name:  RCS_FQDN
+          valueFrom:
+            configMapKeyRef:
+              name: securebanking-platform-config
+              key: RCS_FQDN
+        - name:  RCS_API_INTERNAL_SVC
+          valueFrom:
+            configMapKeyRef:
+              name: securebanking-platform-config
+              key: RCS_API_INTERNAL_SVC
+        - name:  RCS_CONSENT_RESPONSE_JWT_ISSUER
+          valueFrom:
+            configMapKeyRef:
+              name: securebanking-platform-config
+              key: RCS_CONSENT_RESPONSE_JWT_ISSUER
+        - name:  RCS_UI_FQDN
+          valueFrom:
+            configMapKeyRef:
+              name: securebanking-platform-config
+              key: RCS_UI_FQDN
+        - name:  RCS_UI_INTERNAL_SVC
+          valueFrom:
+            configMapKeyRef:
+              name: securebanking-platform-config
+              key: RCS_UI_INTERNAL_SVC
+        - name:  AM_REALM
+          valueFrom:
+            configMapKeyRef:
+              name: securebanking-platform-config
+              key: AM_REALM
+        - name:  USER_OBJECT
+          valueFrom:
+            configMapKeyRef:
+              name: securebanking-platform-config
+              key: USER_OBJECT
+        - name:  IG_CLIENT_ID
+          valueFrom:
+            configMapKeyRef:
+              name: securebanking-platform-config
+              key: IG_CLIENT_ID
+        - name:  IG_CLIENT_SECRET
+          valueFrom:
+            configMapKeyRef:
+              name: securebanking-platform-config
+              key: IG_CLIENT_SECRET
+        - name:  IG_IDM_USER
+          valueFrom:
+            configMapKeyRef:
+              name: securebanking-platform-config
+              key: IG_IDM_USER
+        - name:  IG_IDM_PASSWORD
+          valueFrom:
+            configMapKeyRef:
+              name: securebanking-platform-config
+              key: IG_IDM_PASSWORD
+        - name:  IG_AGENT_ID
+          valueFrom:
+            configMapKeyRef:
+              name: securebanking-platform-config
+              key: IG_AGENT_ID
+        - name:  IG_AGENT_PASSWORD
+          valueFrom:
+            configMapKeyRef:
+              name: securebanking-platform-config
+              key: IG_AGENT_PASSWORD
+        - name:  APICLIENT_OBJECT
+          valueFrom:
+            configMapKeyRef:
+              name: securebanking-platform-config
+              key: APICLIENT_OBJECT
+        - name:  APICLIENTORG_OBJECT
+          valueFrom:
+            configMapKeyRef:
+              name: securebanking-platform-config
+              key: APICLIENTORG_OBJECT
+        - name:  ACCOUNTACCESSINTENT_OBJECT
+          valueFrom:
+            configMapKeyRef:
+              name: securebanking-platform-config
+              key: ACCOUNTACCESSINTENT_OBJECT
+        - name:  IG_OB_ASPSP_SIGNING_KEYSTORE_PATH
+          valueFrom:
+            configMapKeyRef:
+              name: securebanking-platform-config
+              key: IG_OB_ASPSP_SIGNING_KEYSTORE_PATH              
+        - name:  IG_OB_ASPSP_SIGNING_KEYSTORE_TYPE
+          valueFrom:
+            configMapKeyRef:
+              name: securebanking-platform-config
+              key: IG_OB_ASPSP_SIGNING_KEYSTORE_TYPE
+        - name:  IG_OB_ASPSP_SIGNING_KEYSTORE_STOREPASS
+          valueFrom:
+            configMapKeyRef:
+              name: securebanking-platform-config
+              key: IG_OB_ASPSP_SIGNING_KEYSTORE_STOREPASS
+        - name:  IG_OB_ASPSP_SIGNING_KEYSTORE_KEYPASS
+          valueFrom:
+            configMapKeyRef:
+              name: securebanking-platform-config
+              key: IG_OB_ASPSP_SIGNING_KEYSTORE_KEYPASS
+        - name:  IG_OB_ASPSP_SIGNING_KEYSTORE_ALIAS
+          valueFrom:
+            configMapKeyRef:
+              name: securebanking-platform-config
+              key: IG_OB_ASPSP_SIGNING_KEYSTORE_ALIAS
+        - name:  IG_OB_ASPSP_SIGNING_KID
+          valueFrom:
+            configMapKeyRef:
+              name: securebanking-platform-config
+              key: IG_OB_ASPSP_SIGNING_KID
+        - name:  IG_TEST_DIRECTORY_SIGNING_KEYSTORE_PATH
+          valueFrom:
+            configMapKeyRef:
+              name: securebanking-platform-config
+              key: IG_TEST_DIRECTORY_SIGNING_KEYSTORE_PATH
+        - name:  IG_TEST_DIRECTORY_SIGNING_KEYSTORE_TYPE
+          valueFrom:
+            configMapKeyRef:
+              name: securebanking-platform-config
+              key: IG_TEST_DIRECTORY_SIGNING_KEYSTORE_TYPE
+        - name:  IG_TEST_DIRECTORY_SIGNING_KEYSTORE_STOREPASS
+          valueFrom:
+            configMapKeyRef:
+              name: securebanking-platform-config
+              key: IG_TEST_DIRECTORY_SIGNING_KEYSTORE_STOREPASS
+        - name:  IG_TEST_DIRECTORY_SIGNING_KEYSTORE_KEYPASS
+          valueFrom:
+            configMapKeyRef:
+              name: securebanking-platform-config
+              key: IG_TEST_DIRECTORY_SIGNING_KEYSTORE_KEYPASS
+        - name:  IG_TEST_DIRECTORY_SIGNING_KEYSTORE_ALIAS
+          valueFrom:
+            configMapKeyRef:
+              name: securebanking-platform-config
+              key: IG_TEST_DIRECTORY_SIGNING_KEYSTORE_ALIAS
+        - name:  IG_TEST_DIRECTORY_CA_KEYSTORE_PATH
+          valueFrom:
+            configMapKeyRef:
+              name: securebanking-platform-config
+              key: IG_TEST_DIRECTORY_CA_KEYSTORE_PATH
+        - name:  IG_TEST_DIRECTORY_CA_KEYSTORE_TYPE
+          valueFrom:
+            configMapKeyRef:
+              name: securebanking-platform-config
+              key: IG_TEST_DIRECTORY_CA_KEYSTORE_TYPE
+        - name:  IG_TEST_DIRECTORY_CA_KEYSTORE_STOREPASS
+          valueFrom:
+            configMapKeyRef:
+              name: securebanking-platform-config
+              key: IG_TEST_DIRECTORY_CA_KEYSTORE_STOREPASS
+        - name:  IG_TEST_DIRECTORY_CA_KEYSTORE_KEYPASS
+          valueFrom:
+            configMapKeyRef:
+              name: securebanking-platform-config
+              key: IG_TEST_DIRECTORY_CA_KEYSTORE_KEYPASS
+        - name:  IG_TEST_DIRECTORY_CA_KEYSTORE_ALIAS
+          valueFrom:
+            configMapKeyRef:
+              name: securebanking-platform-config
+              key: IG_TEST_DIRECTORY_CA_KEYSTORE_ALIAS
+        - name:  IG_TRUSTSTORE_PATH
+          valueFrom:
+            configMapKeyRef:
+              name: securebanking-platform-config
+              key: IG_TRUSTSTORE_PATH
+        - name:  IG_TRUSTSTORE_PASSWORD
+          valueFrom:
+            configMapKeyRef:
+              name: securebanking-platform-config
+              key: IG_TRUSTSTORE_PASSWORD

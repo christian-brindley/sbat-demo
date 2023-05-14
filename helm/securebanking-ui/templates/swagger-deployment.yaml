@@ -1,0 +1,48 @@
+apiVersion: {{ .Values.apiVersion.deployment }}
+kind: Deployment
+metadata:
+  name: {{ .Chart.Name }}-{{ .Values.swaggerUI.subdomain }}
+  labels:
+    app: {{ .Chart.Name }}-{{ .Values.swaggerUI.subdomain }}
+spec:
+  replicas: {{ .Values.swaggerUI.deployment.replicas }}
+  strategy:
+    rollingUpdate:
+      maxSurge: {{ .Values.swaggerUI.deployment.rollingUpdate.maxSurge }}
+      maxUnavailable: {{ .Values.swaggerUI.deployment.rollingUpdate.maxUnavailable }}
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app: {{ .Chart.Name }}-{{ .Values.swaggerUI.subdomain }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Chart.Name }}-{{ .Values.swaggerUI.subdomain }}
+        appVersion: {{ .Chart.AppVersion }}
+        helmVersion: {{ .Chart.Version }}
+    spec:
+      containers:
+        - name: swagger
+          {{- if .Values.swaggerUI.deployment.imageOverride.enabled }}
+          image: "{{ .Values.swaggerUI.deployment.imageOverride.repo }}:{{ .Values.swaggerUI.deployment.imageOverride.tag }}"
+          {{- else }}
+          image: "eu.gcr.io/sbat-gcr-release/securebanking/${ .Chart.Name }:{{ .Chart.AppVersion }}"
+          {{- end }}
+          imagePullPolicy: {{ .Values.swaggerUI.deployment.imagePullPolicy }}
+          ports:
+            - name: http-server
+              containerPort: {{ .Values.swaggerUI.deployment.port }}
+          env:
+            - name: DOMAIN
+              value: {{ .Values.ingress.domain }}
+            - name: PORT
+              value: {{ .Values.swaggerUI.deployment.port | quote }}
+            - name: TEMPLATE
+              value: {{ .Values.swaggerUI.deployment.templateName }}
+            - name: SWAGGER_JSON_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: securebanking-platform-config
+                  key: RS_FQDN
+          resources:
+            {{- toYaml .Values.swaggerUI.deployment.resources | nindent 12 }}

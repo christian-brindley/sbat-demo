@@ -1,0 +1,29 @@
+apiVersion: {{ .Values.ingress.apiVersion }}
+kind: Ingress
+metadata:
+  annotations:
+    kubernetes.io/ingress.class: {{ .Values.ingress.class }}
+    {{- with .Values.ingress.additionalAnnotations }}
+      {{- toYaml . | nindent 4 }}
+    {{- end }}
+  labels:
+    app: {{ .Chart.Name }}
+    appVersion: {{ .Chart.AppVersion }}
+    helmVersion: {{ .Chart.Version }}
+  name: {{ .Chart.Name }}-rcs
+spec:
+  rules:
+  - host: {{ .Values.ingress.consenthost }}.{{ .Values.ingress.domain }}
+    http:
+      paths:
+      - backend:
+          service: 
+            name: securebanking-ui-consent
+            port:
+              number: 80
+        path: /
+        pathType: Prefix       
+  tls:
+  - hosts:
+    - "{{ .Values.ingress.consenthost }}.{{ .Values.ingress.domain }}"
+    secretName: {{ .Values.ingress.tls.secretName }}

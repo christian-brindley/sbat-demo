@@ -1,0 +1,55 @@
+deployment:
+  apiVersion: apps/v1
+  replicas: 1
+
+  rollingUpdate:
+    maxSurge: 50%
+    maxUnavailable: 25%
+
+  imagePullPolicy: Never
+
+  # Deploy a different image to the intended release (useful for development)
+  imageOverride:
+    enabled: true
+    repo: securebanking-openbanking-uk-rs
+    tag: latest
+    tagDelimiter: ":"
+
+  cors:
+    originEnds: localhost
+
+  server:
+    port: 8080
+
+  java:
+    opts: -XX:+UseG1GC -XX:+UseContainerSupport -XX:MaxRAMPercentage=50 -agentlib:jdwp=transport=dt_socket,address=*:9090,server=y,suspend=n
+
+  resources: 
+    limits:
+      cpu: "250m"
+      memory: "512Mi"
+    requests:
+      cpu: "250m"
+      memory: "512Mi"    
+
+mongodb:
+  host: mongodb
+
+ingress:
+  apiVersion: networking.k8s.io/v1
+  class: nginx
+  additionalAnnotations:
+    nginx.ingress.kubernetes.io/client-body-buffer-size: 1m
+    nginx.ingress.kubernetes.io/proxy-body-size: 150m
+    nginx.ingress.kubernetes.io/proxy-buffer-size: 100k
+
+  domain: sbat.demo
+  subdomain: rs
+  tls:
+    secretName: server.tls
+    subdomain: rs
+  
+service:
+  apiVersion: v1
+  type: ClusterIP
+

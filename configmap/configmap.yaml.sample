@@ -1,0 +1,80 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: securebanking-platform-config
+data:
+  # The domain name for IG protected services
+  IG_FQDN: tpp.sbat.demo
+  MTLS_FQDN: tpp.sbat.demo
+
+  # The domain name for the ForgeRock platform
+  IDENTITY_PLATFORM_FQDN: iam.sbat.demo
+
+  # The platform environment - one of the following
+  # - CDK: (Cloud Developer's Kit) development identity platform
+  # - CDM: CDM (Cloud Deployment Model)
+  # - FIDC: FIDC (Forgerock Identity Cloud) identity cloud platform
+  ENVIRONMENT_TYPE: FIDC
+
+  # The domain name of the OB resource server
+  RS_FQDN: rs.sbat.demo
+  RS_INTERNAL_SVC: securebanking-openbanking-uk-rs
+
+  # The domain name of the Remote Consent Service backend
+  RCS_FQDN: rcs.sbat.demo
+  RCS_API_INTERNAL_SVC: securebanking-openbanking-uk-rcs
+  RCS_CONSENT_RESPONSE_JWT_ISSUER: secure-open-banking-rcs
+
+  # The domain name of the Remote Consent Service backend
+  RCS_UI_FQDN: consent.sbat.demo
+  RCS_UI_INTERNAL_SVC: securebanking-ui
+
+  # The realm to use in the ForgeRock platform
+  AM_REALM: alpha
+
+  # The name of the user object in the platform
+  # - CDM/CDK: usually "user"
+  # - FIDC: usually "alpha_user"
+  USER_OBJECT: alpha_user
+
+  APICLIENT_OBJECT: apiClient
+  APICLIENTORG_OBJECT: apiClientOrg
+  ACCOUNTACCESSINTENT_OBJECT: accountAccessIntent
+
+  # OAuth2 client ID and secret for IG - needs to be created in platform
+  IG_CLIENT_ID: ig-client
+  IG_CLIENT_SECRET: Passw0rd
+
+  # Service account for IG to authorise to platform - needs to be created in platform
+  IG_IDM_USER: service_account.ig
+  IG_IDM_PASSWORD: Passw0rd
+
+  # Agent ID and password for IG to talk to AM - needs to be created in platform
+  IG_AGENT_ID: ig-agent
+  IG_AGENT_PASSWORD: Passw0rd
+
+  # Keystore used for signing OB JWTs - installed in IG base directory
+  IG_OB_ASPSP_SIGNING_KEYSTORE_PATH: /keystores/aspsp.p12
+  IG_OB_ASPSP_SIGNING_KEYSTORE_TYPE: PKCS12
+  IG_OB_ASPSP_SIGNING_KEYSTORE_STOREPASS: password
+  IG_OB_ASPSP_SIGNING_KEYSTORE_KEYPASS: password
+  IG_OB_ASPSP_SIGNING_KEYSTORE_ALIAS: jwtsigner
+  IG_OB_ASPSP_SIGNING_KID: NTOZs+cHZSyO0p0AKPuHctl2ddc=
+
+  # Keystore used for signing test OB certificates for TPP testing - installed in IG base directory
+  IG_TEST_DIRECTORY_CA_KEYSTORE_PATH: /keystores/ca.p12
+  IG_TEST_DIRECTORY_CA_KEYSTORE_TYPE: PKCS12
+  IG_TEST_DIRECTORY_CA_KEYSTORE_STOREPASS: password
+  IG_TEST_DIRECTORY_CA_KEYSTORE_KEYPASS: password
+  IG_TEST_DIRECTORY_CA_KEYSTORE_ALIAS: ca
+
+  IG_TEST_DIRECTORY_SIGNING_KEYSTORE_PATH: /keystores/ca.p12
+  IG_TEST_DIRECTORY_SIGNING_KEYSTORE_TYPE: PKCS12
+  IG_TEST_DIRECTORY_SIGNING_KEYSTORE_STOREPASS: password
+  IG_TEST_DIRECTORY_SIGNING_KEYSTORE_KEYPASS: password
+  IG_TEST_DIRECTORY_SIGNING_KEYSTORE_ALIAS: ca
+
+  # Keystore with trusted CA certificates used to validate TPP client certificates - installed in IG base directory
+  IG_TRUSTSTORE_PATH: /keystores/trust.p12
+  IG_TRUSTSTORE_PASSWORD: password
+

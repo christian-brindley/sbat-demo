@@ -1,0 +1,4 @@
+configmap/configmap.yaml
+kustomize/sbat/secrets.yaml
+certs/secrets/*
+!certs/secrets/README.md
